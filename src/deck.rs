@@ -2,6 +2,7 @@ extern crate rand;
 
 use rand::seq::SliceRandom;
 use rand::thread_rng;
+use std::cmp::Ordering;
 use std::fmt;
 use std::fmt::{Display, Formatter};
 
@@ -16,6 +17,12 @@ pub struct Deck {
     pub cursor: usize,
 }
 
+impl PartialOrd for Card {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.partial_cmp(&other)
+    }
+}
+
 impl Display for Card {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         let shape_str: &str = match self.shape {
@@ -26,19 +33,19 @@ impl Display for Card {
             _ => "Not Exist Shape",
         };
         let num_str: &str = match self.num {
-            0 => "A",
-            1 => "2",
-            2 => "3",
-            3 => "4",
-            4 => "5",
-            5 => "6",
-            6 => "7",
-            7 => "8",
-            8 => "9",
-            9 => "T",
-            10 => "J",
-            11 => "Q",
-            12 => "K",
+            0 => "2",
+            1 => "3",
+            2 => "4",
+            3 => "5",
+            4 => "6",
+            5 => "7",
+            6 => "8",
+            7 => "9",
+            8 => "T",
+            9 => "J",
+            10 => "Q",
+            11 => "K",
+            12 => "A",
             _ => "Not Exist Number",
         };
         write!(f, "{}{}", shape_str, num_str)
@@ -61,8 +68,8 @@ impl<'a> Deck {
         self.cards.shuffle(&mut rng);
         // println!("{self}");
     }
-    pub fn deal_card(&'a mut self) -> &'a Card {
-        let deal_card: &Card = &self.cards[self.cursor];
+    pub fn deal_card(&'a mut self) -> Card {
+        let deal_card: Card = self.cards[self.cursor];
         self.cursor += 1;
         deal_card
     }
@@ -106,10 +113,10 @@ mod test_for_deck {
     #[test]
     fn dealing_card_is_successful() {
         let mut deck = Deck::new();
-        let c0 = *deck.deal_card();
-        let c1 = *deck.deal_card();
-        let c2 = *deck.deal_card();
-        let c3 = *deck.deal_card();
+        let c0 = deck.deal_card();
+        let c1 = deck.deal_card();
+        let c2 = deck.deal_card();
+        let c3 = deck.deal_card();
         assert_eq!(c0.shape, 0);
         assert_eq!(c0.num, 0);
         assert_eq!(c1.shape, 0);
