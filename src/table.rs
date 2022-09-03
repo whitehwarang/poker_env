@@ -29,31 +29,37 @@ impl PartialOrd for Card {
 }
 
 impl Card {
+    fn shape_to_string(&self) -> String {
+        match self.shape {
+            0 => String::from("S"),
+            1 => String::from("D"),
+            2 => String::from("H"),
+            3 => String::from("C"),
+            _ => String::from("Not Existant Shape"),
+        }
+    }
+
+    fn num_to_string(&self) -> String {
+        match self.num {
+            0 => String::from("2"),
+            1 => String::from("3"),
+            2 => String::from("4"),
+            3 => String::from("5"),
+            4 => String::from("6"),
+            5 => String::from("7"),
+            6 => String::from("8"),
+            7 => String::from("9"),
+            8 => String::from("T"),
+            9 => String::from("J"),
+            10 => String::from("Q"),
+            11 => String::from("K"),
+            12 => String::from("A"),
+            _ => String::from("Not Exist Number"),
+        }
+    }
+
     fn to_string(&self) -> String {
-        let shape_str: &str = match self.shape {
-            0 => "S",
-            1 => "D",
-            2 => "H",
-            3 => "C",
-            _ => "Not Exist Shape",
-        };
-        let num_str: &str = match self.num {
-            0 => "2",
-            1 => "3",
-            2 => "4",
-            3 => "5",
-            4 => "6",
-            5 => "7",
-            6 => "8",
-            7 => "9",
-            8 => "T",
-            9 => "J",
-            10 => "Q",
-            11 => "K",
-            12 => "A",
-            _ => "Not Exist Number",
-        };
-        shape_str.to_string() + num_str
+        self.shape_to_string() + &self.num_to_string()
     }
 }
 
@@ -85,7 +91,7 @@ impl Display for Deck {
 
 impl Display for Hand {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{:?}", self.cards/*.iter().collect::<String>()*/ )
+        write!(f, "{:?}", self.cards /*.iter().collect::<String>()*/)
     }
 }
 
