@@ -1,10 +1,10 @@
 mod table;
-mod grade;
+mod grade2;
 extern crate rand;
 
 use std::collections::HashSet;
 use crate::table::{Card, Deck, Hand};
-use crate::grade::*;
+use crate::grade2::*;
 
 fn main() {
     println!("Hello, world!");

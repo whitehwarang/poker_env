@@ -33,15 +33,15 @@ impl fmt::Display for Grade {
 impl Grade {
     pub fn to_string(&self) -> String {
         match self {
-            Self::StraightFlush(tuple) => format!("Straight Flush	: {:?}", tuple),
-            Self::FourOfAKind(tuple) => format!("Four Of A Kind	: {:?}", tuple),
-            Self::FullHouse(tuple) => format!("Full House		: {:?}", tuple),
-            Self::Flush(tuple) => format!("Flush		: {:?}", tuple),
-            Self::Straight(tuple) => format!("Straight		: {:?}", tuple),
-            Self::ThreeOfAKind(tuple) => format!("Three Of A Kind	: {:?}", tuple),
-            Self::TwoPairs(tuple) => format!("TwoPairs		: {:?}", tuple),
-            Self::OnePair(tuple) => format!("One Pair		: {:?}", tuple),
-            Self::Top(tuple) => format!("Top			: {:?}", tuple),
+            Self::StraightFlush(tuple) => format!("Straight Flush	: {:?}, {:?}, {:?}, {:?}, {:?}", tuple.0, tuple.1, tuple.2, tuple.3, tuple.4),
+            Self::FourOfAKind(tuple) => format!("Four Of A Kind	: {:?} {:?}, {:?}, {:?}, {:?}", tuple.0, tuple.1, tuple.2, tuple.3, tuple.4),
+            Self::FullHouse(tuple) => format!("Full House		: {:?} {:?}, {:?}, {:?}, {:?}", tuple.0, tuple.1, tuple.2, tuple.3, tuple.4),
+            Self::Flush(tuple) => format!("Flush		: {:?} {:?}, {:?}, {:?}, {:?}", tuple.0, tuple.1, tuple.2, tuple.3, tuple.4),
+            Self::Straight(tuple) => format!("Straight		: {:?} {:?}, {:?}, {:?}, {:?}", tuple.0, tuple.1, tuple.2, tuple.3, tuple.4),
+            Self::ThreeOfAKind(tuple) => format!("Three Of A Kind	: {:?} {:?}, {:?}, {:?}, {:?}", tuple.0, tuple.1, tuple.2, tuple.3, tuple.4),
+            Self::TwoPairs(tuple) => format!("TwoPairs		: {:?} {:?}, {:?}, {:?}, {:?}", tuple.0, tuple.1, tuple.2, tuple.3, tuple.4),
+            Self::OnePair(tuple) => format!("One Pair		: {:?} {:?}, {:?}, {:?}, {:?}", tuple.0, tuple.1, tuple.2, tuple.3, tuple.4),
+            Self::Top(tuple) => format!("Top			: {:?} {:?}, {:?}, {:?}, {:?}", tuple.0, tuple.1, tuple.2, tuple.3, tuple.4),
         }
     } // end :: to_string()
 
