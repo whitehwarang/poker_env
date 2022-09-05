@@ -1,10 +1,10 @@
 mod table;
-mod grade3;
+mod grade;
 extern crate rand;
 
 use std::collections::HashSet;
 use crate::table::{Card, Deck, Hand};
-use crate::grade3::*;
+use crate::grade::*;
 
 fn main() {
         let mut deck = Deck::new();
