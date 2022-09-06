@@ -260,7 +260,7 @@ impl Grade {
         // search straight nums.
         let num_cnts = Self::num_counts(cards);
         let mut cards = cards.to_vec();
-        cards.dedup(); // delete duplicates by card.num
+        cards.dedup_by_key(|card| card.num); // delete duplicates by card.num
                        // must consider a special case : A2345 (0,1,2,3,12)
         let mut consec_cnt: u8 = 0;
         let mut ace_exist: bool = false;
@@ -508,15 +508,16 @@ mod test_for_grade {
     }
 
     #[test]
+    // Straight([HQ, CQ, CJ, ST, S9])
     fn test_straight() {
         let mut cards: Vec<Card> = vec![
-            Card { shape: 3, num: 1 },
-            Card { shape: 1, num: 10 },
-            Card { shape: 2, num: 8 },
-            Card { shape: 3, num: 4 },
-            Card { shape: 3, num: 7 },
+            Card { shape: 0, num: 2 },
+            Card { shape: 1, num: 11 },
+            Card { shape: 2, num: 10 },
+            Card { shape: 3, num: 10 },
             Card { shape: 3, num: 9 },
-            Card { shape: 3, num: 11 },
+            Card { shape: 0, num: 8 },
+            Card { shape: 3, num: 7 },
         ];
         let st = Grade::is_straight(&mut cards);
         assert!(st.is_some());
@@ -524,11 +525,11 @@ mod test_for_grade {
             assert_eq!(
                 HashSet::from(cards),
                 HashSet::from([
-                    Card { shape: 1, num: 10 },
-                    Card { shape: 3, num: 7 },
-                    Card { shape: 2, num: 8 },
+                    Card { shape: 1, num: 11 },
+                    Card { shape: 2, num: 10 },
                     Card { shape: 3, num: 9 },
-                    Card { shape: 3, num: 11 }
+                    Card { shape: 0, num: 8 },
+                    Card { shape: 3, num: 7 }
                 ])
             );
         }

@@ -2,9 +2,8 @@ extern crate rand;
 
 use rand::seq::SliceRandom;
 use rand::thread_rng;
-use std::cmp::Ordering;
+use std::cmp;
 use std::fmt;
-use std::fmt::{Debug, Display, Formatter};
 
 #[derive(Copy, Clone, Eq, PartialEq, Ord, Hash)]
 pub struct Card {
@@ -12,19 +11,53 @@ pub struct Card {
     pub num: usize,
 }
 
+#[derive(fmt::Debug, Copy, Clone)]
 pub struct Deck {
     pub cards: [Card; 52],
     pub cursor: usize,
 }
 
+#[derive(fmt::Debug, Clone)]
 pub struct Hand {
-    cards_num: usize,
+    cards_cnt: usize,
     pub cards: Vec<Card>,
 }
 
 impl PartialOrd for Card {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+    fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
         self.num.partial_cmp(&other.num)
+    }
+}
+
+impl fmt::Debug for Card {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.to_string())
+    }
+}
+
+impl fmt::Display for Card {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.to_string())
+    }
+}
+
+impl fmt::Display for Deck {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            self.cards
+                .iter()
+                .map(|&x| x.to_string())
+                .collect::<Vec<String>>()
+                .join(", ")
+        )
+    }
+}
+
+impl fmt::Display for Hand {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self.cards)
     }
 }
 
@@ -63,38 +96,6 @@ impl Card {
     }
 }
 
-impl Debug for Card {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.to_string())
-    }
-}
-
-impl Display for Card {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.to_string())
-    }
-}
-
-impl Display for Deck {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}",
-            self.cards
-                .iter()
-                .map(|&x| x.to_string())
-                .collect::<Vec<String>>()
-                .join(", ")
-        )
-    }
-}
-
-impl Display for Hand {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{:?}", self.cards /*.iter().collect::<String>()*/)
-    }
-}
-
 impl Deck {
     pub fn new() -> Self {
         let mut cards = [Card { shape: 0, num: 0 }; 52];
@@ -109,7 +110,28 @@ impl Deck {
 
     pub fn shuffle(&mut self) -> () {
         let mut rng = thread_rng();
-        self.cards.shuffle(&mut rng);
+        self.cards.shuffle(&mut rng); // rand::seq::SliceRandom;
+    }
+
+    pub fn partial_shuffle(&mut self) -> () {
+	let mut rng = thread_rng();
+	self.cards[self.cursor..].shuffle(&mut rng);
+    }
+
+    pub fn set_front_cards(&mut self, front_cards: Vec<Card>) -> Result<(), &str> {
+	if self.cursor >= 2 {return Err("Front Cards' Slot Already occupied.");}
+	let i_front_cards: Vec<usize> = self.cards.iter()
+		.enumerate()
+		.filter(|(_i, &card)| front_cards.contains(&card))
+		.map(|(i, _card)| i )
+		.collect::<_>();
+	self.cards.swap(0, i_front_cards[0]);
+	self.cards.swap(1, i_front_cards[1]);
+	/*i_front_cards.into_iter()
+		.enumerate()
+		.for_each(|(j, (i, &card))| {self.cards.swap(j, i);});*/
+	self.cursor = front_cards.len();
+	return Ok(());
     }
 
     pub fn deal_cards(&mut self, num: usize) -> Vec<Card> {
@@ -122,24 +144,34 @@ impl Deck {
 impl Hand {
     pub fn new() -> Self {
         Self {
-            cards: Vec::<Card>::new(),
-            cards_num: 0,
+            cards_cnt: 0,
+	    cards: Vec::<Card>::new(),
         }
     }
-    pub fn clone_cards(&self) -> Vec<Card> {
-        self.cards.clone()
+    pub fn clone(&self) -> Self {
+	let cards_cnt = self.cards_cnt;
+	let cards = self.cards.clone();
+	Self {cards_cnt, cards}
     }
-    pub fn add_cards(&mut self, cards: Vec<Card>) -> () {
-        //    if self.cards_num < 7 {
+
+    pub fn add_card(&mut self, card: Card) -> () {
+        if self.cards_cnt < 7 {
+	    self.cards.push(card);
+	    self.cards_cnt += 1;
+	}
+    }
+
+    pub fn add_cards(&mut self, cards: &[Card]) -> () {
+        //    if self.cards_cnt < 7 {
         cards.into_iter().for_each(|card| {
-            if self.cards_num < 7 {
-                self.cards.push(card);
-                self.cards_num += 1;
+            if self.cards_cnt < 7 {
+                self.cards.push(*card);
+                self.cards_cnt += 1;
             }
         })
     }
     pub fn len(&self) -> usize {
-        self.cards_num
+        self.cards_cnt
     }
 }
 
@@ -167,25 +199,32 @@ mod test_for_deck {
     #[test]
     fn dealing_card_is_successful() {
         let mut deck = Deck::new();
-        let c0 = deck.deal_cards(1);
-        let c1 = deck.deal_cards(1);
-        let c2 = deck.deal_cards(1);
-        let c3 = deck.deal_cards(1);
-        assert_eq!(c0[0].shape, 0);
-        assert_eq!(c0[0].num, 0);
-        assert_eq!(c1[0].shape, 0);
-        assert_eq!(c1[0].num, 1);
-        assert_eq!(c2[0].shape, 0);
-        assert_eq!(c2[0].num, 2);
-        assert_eq!(c3[0].shape, 0);
-        assert_eq!(c3[0].num, 3);
+        let fc = deck.deal_cards(4);
+	deck.deal_cards(13);
+	let fc2 = deck.deal_cards(3);
+	assert_eq!(fc[0], Card{shape:0, num:0});
+	assert_eq!(fc[1], Card{shape:0, num:1});
+	assert_eq!(fc[2], Card{shape:0, num:2});
+	assert_eq!(fc[3], Card{shape:0, num:3});
+	assert_eq!(fc2[0], Card{shape:1, num:4});
+	assert_eq!(fc2[1], Card{shape:1, num:5});
+	assert_eq!(fc2[2], Card{shape:1, num:6});
     }
     #[test]
     fn hand_get_cards_from_deck() {
         let mut deck = Deck::new();
         let mut p1 = Hand::new();
-        p1.add_cards(deck.deal_cards(7));
+        p1.add_cards(&deck.deal_cards(7));
         assert_eq!(p1.len(), 7);
-        assert_eq!(p1.cards[6].num, 6);
+        assert_eq!(p1.cards[6], Card{shape:0, num:6});
+    }
+    #[test]
+    fn partial_shuffling_test() {
+	let mut deck = Deck::new();
+	let cards: Vec<Card> = deck.deal_cards(7);
+	let post_cards : Vec<Card> = deck.cards[7..14].to_vec();
+	deck.partial_shuffle();
+	assert_eq!(cards, deck.cards[..7]);
+	assert_ne!(post_cards, deck.cards[7..14]);
     }
 }
