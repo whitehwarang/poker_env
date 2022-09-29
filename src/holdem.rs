@@ -1,5 +1,6 @@
 use std::fmt::Debug;
-use crate::table::*;
+use crate::deck::*;
+use crate::hand::*;
 use crate::grade::*;
 
 #[derive(Debug, Clone, Copy)]
@@ -38,7 +39,7 @@ impl Clone for HoldemGame {
 
 impl HoldemGame {
 	pub fn new(players_cnt: usize) -> Self {
-		if players_cnt > 7 {panic!("Too many players on this game.");}
+		if players_cnt > 10 {panic!("Too many players on this game.");}
 		let deck = Deck::new();
 		let mut players = Vec::<Hand>::new();
 		for _ in 0..players_cnt {players.push(Hand::new());}
@@ -168,13 +169,14 @@ mod montecarlo_test {
     use crate::holdem::*;
     #[test]
     fn motecarlo_test_00() {	
-	let mut game = HoldemGame::new(2);
+	let mut game = HoldemGame::new(3);
 	let frontcards = vec![Card{shape:0, num:12}, Card{shape:1, num:12}];
 	game.set_front_cards(frontcards);
 	println!("{:?}{:?}", game.deck.cards[0], game.deck.cards[1]);
 	let win_rate = game.calc_win_rate();
 	println!("{}", win_rate);
-	assert!(0.8236-0.01 < win_rate && win_rate < 0.8236+0.01 );
+	// assert!(0.8236-0.01 < win_rate && win_rate < 0.8236+0.01 );
+	assert!(0.735-0.01 < win_rate && win_rate < 0.735+0.01 );
     }
 
 }

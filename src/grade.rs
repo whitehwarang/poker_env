@@ -1,4 +1,4 @@
-use crate::table::Card;
+use crate::deck::Card;
 use std::cmp::Ordering;
 use std::fmt;
 
@@ -392,7 +392,7 @@ impl Grade {
 #[cfg(test)]
 mod test_for_grade {
     use super::*;
-    use crate::table::*;
+    use crate::deck::*;
     use std::collections::HashSet;
 
     #[test]

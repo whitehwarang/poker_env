@@ -1,3 +1,6 @@
+[profile.dev] 
+debug = false
+
 [package]
 name = "poker_env"
 version = "0.1.0"
